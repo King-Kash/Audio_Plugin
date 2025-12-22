@@ -1,0 +1,15 @@
+# Mac system files
+**/.DS_Store
+
+# JUCE generated folders
+**/Builds/
+**/JuceLibraryCode/
+
+# Visual Studio and Windows Specific
+.vs/
+Debug/
+Release/
+x64/
+*.obj
+*.pdb
+*.exe
