@@ -1,3 +1,6 @@
 [submodule "MySubmodules/JUCE"]
 	path = MySubmodules/JUCE
 	url = https://github.com/juce-framework/JUCE.git
+[submodule "MySubmodules/SimpleMultiBandComp"]
+	path = MySubmodules/SimpleMultiBandComp
+	url = https://github.com/matkatmusic/SimpleMultiBandComp.git
