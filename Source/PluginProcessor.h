@@ -12,7 +12,7 @@
 #include <vector>
 
 //#include <../MySubmodules/SimpleMultiBandComp/Source/DSP/Fifo.h>
-#include <Fifo.h> //First in First out data structure for passing data between the Audio Thread and the GUI Thread.
+#include <Fifo.h> //First in First out data structure (behaves like a queue or buffer) for passing data between the Audio Thread and the GUI Thread.
 /*
 What we did in Projucer:
 1. Added Header Search Paths: Tells Projecuer "When you write the Visual Studio project file, include this specific folder in the 'Global Search List'
@@ -71,7 +71,7 @@ public:
     enum class DSP_Option {
         Phase,
 		Chorus,
-		Overdrive,
+        OverDrive,
 		LadderFilter,
         END_OF_LIST,
     };
@@ -79,7 +79,7 @@ public:
 	using DSP_Order = std::array<DSP_Option, static_cast<size_t>(DSP_Option::END_OF_LIST)>;
 	//using is a way to create an alias (a nickname) for a data type. Here, we are creating an alias called DSP_Order for an array that holds DSP_Option enum values and has a size of 4 (after the static cast).
 	SimpleMBComp::Fifo<DSP_Order> dspOrderFifo; //FIFO to pass the DSP order from the GUI thread to the Audio thread. Dictates order of effects applied to audio signal.
-
+	//each instance in the FIFO is a DSP_Order, which is an array of DSP_Option enum values.
 private:
 
     /*
@@ -112,7 +112,7 @@ private:
             dsp.prepare(spec);
         }
 
-		//processes the audio buffer (context) with the selected DSP effect
+		//processes the context (made using the audio buffer) with the selected DSP effect
         void process(const juce::dsp::ProcessContextReplacing<float>& context) override {
             dsp.process(context);
         }

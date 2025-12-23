@@ -144,6 +144,60 @@ void Audio_PluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    auto newDSPOrder = DSP_Order();
+
+    while (dspOrderFifo.pull(newDSPOrder))
+    {
+        /*
+        .pull() checks the FIFO for new data. If there is data available it returns true.
+        The function takes arguments by refrence. Since we pass newDSPOrder by refrence,
+		the pull function will set newDSPOrder to the most recent DSP_Order from the FIFO.
+        */
+    }
+
+    if (newDSPOrder != DSP_Order()) {
+		dspOrder = newDSPOrder; //update the global,private dspOrder variable to the latest order from the FIFO.
+    }
+
+    
+	//convert each enumed dsp in dspOrder into a pointers to their corresponding DSP_Choice objects.
+	//store these pointers in an instance of the DSP_Pointers alias type (array) we defined in the header file.
+    DSP_Pointers dspPointers;
+
+    for (size_t i = 0; i < dspPointers.size(); ++i)
+    {
+        switch (dspOrder[i]) //each element in dspOrder is an enum from DSP_Options
+        {
+            case DSP_Option::Phase:
+                dspPointers[i] = &phaser;
+                break;
+            case DSP_Option::Chorus:
+                dspPointers[i] = &chorus;
+                break;
+            case DSP_Option::OverDrive:
+                dspPointers[i] = &overdrive;
+                break;
+            case DSP_Option::LadderFilter:
+                dspPointers[i] = &ladderFilter;
+                break;
+			case DSP_Option::END_OF_LIST:
+                jassertfalse;
+                break;
+        }
+    }
+
+	//process the audio buffer through each DSP effect in the order specified by dspOrder.
+    auto block = juce::dsp::AudioBlock<float>(buffer);
+    auto context = juce::dsp::ProcessContextReplacing<float>(block);
+
+    for (size_t i = 0; i < dspPointers.size(); ++i)
+    {
+        if (dspPointers[i] != nullptr)
+        {
+			dspPointers[i]->process(context);//runs the process function of the DSP_Choice object pointed to by dspPointers[i]. Arrow instead of dot because dspPointers[i] is a pointer.
+        }
+    }
+
 }
 
 //==============================================================================
