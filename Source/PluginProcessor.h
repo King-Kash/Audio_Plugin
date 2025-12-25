@@ -9,8 +9,6 @@
 #pragma once //ensure the file is included only once during compilation
 
 #include <JuceHeader.h>
-#include <vector>
-
 //#include <../MySubmodules/SimpleMultiBandComp/Source/DSP/Fifo.h>
 #include <Fifo.h> //First in First out data structure (behaves like a queue or buffer) for passing data between the Audio Thread and the GUI Thread.
 /*
@@ -75,6 +73,9 @@ public:
 		LadderFilter,
         END_OF_LIST,
     };
+
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    juce::AudioProcessorValueTreeState apvst{ *this, nullptr, "Settings", createParameterLayout() };
 
 	using DSP_Order = std::array<DSP_Option, static_cast<size_t>(DSP_Option::END_OF_LIST)>;
 	//using is a way to create an alias (a nickname) for a data type. Here, we are creating an alias called DSP_Order for an array that holds DSP_Option enum values and has a size of 4 (after the static cast).
